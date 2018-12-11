@@ -21,12 +21,28 @@ class HttpController extends BaseController
 	/** @var string */
 	private $error;
 
+    /** @var array */
+    private $developmentDomains = [];
 
 	public function run()
 	{
 		$this->processArguments();
 		$this->executeAction();
 	}
+
+
+    /**
+     * @param array $developmentDomains [www.dev.domain.cz, dev.domain.cz, localhost, etc..]
+     */
+    public function setDevelopmentDomains(array $developmentDomains)
+    {
+        $this->developmentDomains = $developmentDomains;
+    }
+
+
+    private function isDev(){
+        return in_array($_SERVER['HTTP_HOST'], $this->developmentDomains);
+    }
 
 
 	private function processArguments()
@@ -69,6 +85,11 @@ class HttpController extends BaseController
 				goto error;
 			}
 
+            if(!$this->isDev() && $_GET['mode'] !== '0'){
+                $error = 'This mode is allowed only on dev server.';
+                goto error;
+            }
+
 			switch ($_GET['mode']) {
 				case '0': $this->mode = Engine\Runner::MODE_CONTINUE; break;
 				case '1': $this->mode = Engine\Runner::MODE_RESET; break;
@@ -99,11 +120,16 @@ class HttpController extends BaseController
 		$combinations = $this->getGroupsCombinations();
 		$this->printHeader();
 
-		$modes = array(
-			0 => '<h2 class="continue">Continue</h2>',
-			1 => '<h2 class="reset">Reset <small>All tables, views and data will be destroyed!</small></h2>',
-			2 => '<h2 class="init">Init SQL</h2>',
-		);
+        $modes = array(
+            0 => '<h2 class="continue">Continue</h2>',
+        );
+
+        if($this->isDev()){
+            $modes += array(
+                1 => '<h2 class="reset">Reset <small>All tables, views and data will be destroyed!</small></h2>',
+                2 => '<h2 class="init">Init SQL</h2>',
+            );
+        }
 
 		echo "<h1>Migrations</h1>\n";
 		foreach ($modes as $mode => $heading) {
