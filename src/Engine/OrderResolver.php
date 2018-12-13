@@ -83,6 +83,7 @@ class OrderResolver
 
 		$files = $this->getFlatFiles($files);
 		$files = $this->sortFiles($files, $groups);
+		/**
 		if ($files && $lastMigration) {
 			$firstFile = reset($files);
 			if (strcmp($firstFile->name, $lastMigration->filename) < 0) {
@@ -92,6 +93,7 @@ class OrderResolver
 				));
 			}
 		}
+         */
 
 		return $files;
 	}
