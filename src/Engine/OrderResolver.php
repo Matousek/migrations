@@ -92,13 +92,14 @@ class OrderResolver
 				if (strcmp($file->name, $lastMigrations[$group->name]) >= 0) {
 					continue;
 				}
-
+				/*
 				if ($this->isGroupDependentOn($groups, $file->group, $group) || $this->isGroupDependentOn($groups, $group, $file->group)) {
 					throw new LogicException(sprintf(
 						'New migration "%s/%s" must follow after the latest executed migration "%s/%s".',
 						$file->group->name, $file->name, $group->name, $lastMigrations[$group->name]
 					));
 				}
+				*/
 			}
 		}
 
